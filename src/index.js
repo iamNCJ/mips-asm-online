@@ -6,6 +6,9 @@ import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
   <React.StrictMode>
+      <h1>
+          MIPS Assembler Online
+      </h1>
     <App />
   </React.StrictMode>,
   document.getElementById('root')

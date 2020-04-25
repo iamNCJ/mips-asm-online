@@ -963,6 +963,36 @@
   resolved "https://registry.yarnpkg.com/@csstools/normalize.css/-/normalize.css-10.1.0.tgz#f0950bba18819512d42f7197e56c518aa491cf18"
   integrity sha512-ij4wRiunFfaJxjB0BdrYHIH8FxBJpOwNPhhAcunlmPdXudL1WQV1qoP9un6JsEBAgQH+7UXyyjh0g7jTxXK6tg==
 
+"@fluentui/react-focus@^7.5.0":
+  version "7.5.0"
+  resolved "https://registry.npm.taobao.org/@fluentui/react-focus/download/@fluentui/react-focus-7.5.0.tgz#4c88890c0f6dc44c6cd180264f39ac1eb372cf2e"
+  integrity sha1-TIiJDA9txExs0YAmTzmsHrNyzy4=
+  dependencies:
+    "@uifabric/merge-styles" "^7.11.1"
+    "@uifabric/set-version" "^7.0.11"
+    "@uifabric/styling" "^7.11.8"
+    "@uifabric/utilities" "^7.15.11"
+    tslib "^1.10.0"
+
+"@fluentui/react-icons@^0.1.6":
+  version "0.1.6"
+  resolved "https://registry.npm.taobao.org/@fluentui/react-icons/download/@fluentui/react-icons-0.1.6.tgz#5663178ec0589e3c05312860ef7f2fb9578bb400"
+  integrity sha1-VmMXjsBYnjwFMShg738vuVeLtAA=
+  dependencies:
+    "@uifabric/set-version" "^7.0.11"
+    "@uifabric/styling" "^7.11.8"
+    "@uifabric/utilities" "^7.15.11"
+    tslib "^1.10.0"
+
+"@fluentui/react@^7.107.5":
+  version "7.107.5"
+  resolved "https://registry.npm.taobao.org/@fluentui/react/download/@fluentui/react-7.107.5.tgz#ef8c3201f6dcbae188cf1e99a76b9eb2da3d90fa"
+  integrity sha1-74wyAfbcuuGIzx6Zp2uesto9kPo=
+  dependencies:
+    "@uifabric/set-version" "^7.0.11"
+    office-ui-fabric-react "^7.107.5"
+    tslib "^1.10.0"
+
 "@hapi/address@2.x.x":
   version "2.1.4"
   resolved "https://registry.yarnpkg.com/@hapi/address/-/address-2.1.4.tgz#5d67ed43f3fd41a69d4b9ff7b56e7c0d1d0a81e5"
@@ -1152,6 +1182,11 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^15.0.0"
     chalk "^3.0.0"
+
+"@microsoft/load-themed-styles@^1.10.26":
+  version "1.10.43"
+  resolved "https://registry.npm.taobao.org/@microsoft/load-themed-styles/download/@microsoft/load-themed-styles-1.10.43.tgz#9c57b8af078743590b6fd08c397cef259588610d"
+  integrity sha1-nFe4rweHQ1kLb9CMOXzvJZWIYQ0=
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
@@ -1527,6 +1562,125 @@
     lodash "^4.17.15"
     semver "^6.3.0"
     tsutils "^3.17.1"
+
+"@uifabric/azure-themes@^7.0.67":
+  version "7.0.67"
+  resolved "https://registry.npm.taobao.org/@uifabric/azure-themes/download/@uifabric/azure-themes-7.0.67.tgz#543f0ba1d67c7692852b193a0edac3d9c1759f81"
+  integrity sha1-VD8LodZ8dpKFKxk6DtrD2cF1n4E=
+  dependencies:
+    "@uifabric/merge-styles" "^7.11.1"
+    "@uifabric/set-version" "^7.0.11"
+    office-ui-fabric-react "^7.107.5"
+    tslib "^1.10.0"
+
+"@uifabric/file-type-icons@^7.2.35":
+  version "7.2.35"
+  resolved "https://registry.npm.taobao.org/@uifabric/file-type-icons/download/@uifabric/file-type-icons-7.2.35.tgz#df5c6e32090700db70702fd8623ae8c88606f3d1"
+  integrity sha1-31xuMgkHANtwcC/YYjroyIYG89E=
+  dependencies:
+    "@uifabric/set-version" "^7.0.11"
+    "@uifabric/styling" "^7.11.8"
+    tslib "^1.10.0"
+
+"@uifabric/foundation@^7.7.5":
+  version "7.7.5"
+  resolved "https://registry.npm.taobao.org/@uifabric/foundation/download/@uifabric/foundation-7.7.5.tgz#4c8bf53cdbaa77e613b188d2666b0778ace5855c"
+  integrity sha1-TIv1PNuqd+YTsYjSZmsHeKzlhVw=
+  dependencies:
+    "@uifabric/merge-styles" "^7.11.1"
+    "@uifabric/set-version" "^7.0.11"
+    "@uifabric/styling" "^7.11.8"
+    "@uifabric/utilities" "^7.15.11"
+    tslib "^1.10.0"
+
+"@uifabric/icons@^7.3.31":
+  version "7.3.31"
+  resolved "https://registry.npm.taobao.org/@uifabric/icons/download/@uifabric/icons-7.3.31.tgz#5f9ba56a398545616472a40a360995531ba87601"
+  integrity sha1-X5ulajmFRWFkcqQKNgmVUxuodgE=
+  dependencies:
+    "@uifabric/set-version" "^7.0.11"
+    "@uifabric/styling" "^7.11.8"
+    tslib "^1.10.0"
+
+"@uifabric/merge-styles@^7.11.1":
+  version "7.11.1"
+  resolved "https://registry.npm.taobao.org/@uifabric/merge-styles/download/@uifabric/merge-styles-7.11.1.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40uifabric%2Fmerge-styles%2Fdownload%2F%40uifabric%2Fmerge-styles-7.11.1.tgz#7ed1a8a4ade85d8b652da4c26cc3d25646fd811c"
+  integrity sha1-ftGopK3oXYtlLaTCbMPSVkb9gRw=
+  dependencies:
+    "@uifabric/set-version" "^7.0.11"
+    tslib "^1.10.0"
+
+"@uifabric/react-cards@^0.109.63":
+  version "0.109.63"
+  resolved "https://registry.npm.taobao.org/@uifabric/react-cards/download/@uifabric/react-cards-0.109.63.tgz#a6d92f3b99cb6e83e26d6729b7f78f08adcf1486"
+  integrity sha1-ptkvO5nLboPibWcpt/ePCK3PFIY=
+  dependencies:
+    "@microsoft/load-themed-styles" "^1.10.26"
+    "@uifabric/azure-themes" "^7.0.67"
+    "@uifabric/file-type-icons" "^7.2.35"
+    "@uifabric/foundation" "^7.7.5"
+    "@uifabric/set-version" "^7.0.11"
+    "@uifabric/styling" "^7.11.8"
+    "@uifabric/theme-samples" "^7.0.60"
+    "@uifabric/utilities" "^7.15.11"
+    office-ui-fabric-react "^7.107.5"
+    tslib "^1.10.0"
+
+"@uifabric/react-hooks@^7.2.0":
+  version "7.2.0"
+  resolved "https://registry.npm.taobao.org/@uifabric/react-hooks/download/@uifabric/react-hooks-7.2.0.tgz#70c3e0685a4f886479954db645ea8e86e1ec2789"
+  integrity sha1-cMPgaFpPiGR5lU22ReqOhuHsJ4k=
+  dependencies:
+    "@uifabric/set-version" "^7.0.11"
+    "@uifabric/utilities" "^7.15.11"
+    tslib "^1.10.0"
+
+"@uifabric/set-version@^7.0.11":
+  version "7.0.11"
+  resolved "https://registry.npm.taobao.org/@uifabric/set-version/download/@uifabric/set-version-7.0.11.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40uifabric%2Fset-version%2Fdownload%2F%40uifabric%2Fset-version-7.0.11.tgz#c59e0e0bbf361f5123f8e8f97a8464e28163cc72"
+  integrity sha1-xZ4OC782H1Ej+Oj5eoRk4oFjzHI=
+  dependencies:
+    tslib "^1.10.0"
+
+"@uifabric/styling@^7.11.8":
+  version "7.11.8"
+  resolved "https://registry.npm.taobao.org/@uifabric/styling/download/@uifabric/styling-7.11.8.tgz#3c4d95f67116e28cf9e546462defe946850feb36"
+  integrity sha1-PE2V9nEW4oz55UZGLe/pRoUP6zY=
+  dependencies:
+    "@microsoft/load-themed-styles" "^1.10.26"
+    "@uifabric/merge-styles" "^7.11.1"
+    "@uifabric/set-version" "^7.0.11"
+    "@uifabric/utilities" "^7.15.11"
+    tslib "^1.10.0"
+
+"@uifabric/theme-samples@^7.0.60":
+  version "7.0.60"
+  resolved "https://registry.npm.taobao.org/@uifabric/theme-samples/download/@uifabric/theme-samples-7.0.60.tgz#738b014bc74b6b7950f3dbe481b2fd80cbaaaf14"
+  integrity sha1-c4sBS8dLa3lQ89vkgbL9gMuqrxQ=
+  dependencies:
+    "@uifabric/set-version" "^7.0.11"
+    "@uifabric/variants" "^7.1.50"
+    office-ui-fabric-react "^7.107.5"
+    tslib "^1.10.0"
+
+"@uifabric/utilities@^7.15.11":
+  version "7.15.11"
+  resolved "https://registry.npm.taobao.org/@uifabric/utilities/download/@uifabric/utilities-7.15.11.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40uifabric%2Futilities%2Fdownload%2F%40uifabric%2Futilities-7.15.11.tgz#41342b5207a31aa8b264bf3909083a30d9e30a7b"
+  integrity sha1-QTQrUgejGqiyZL85CQg6MNnjCns=
+  dependencies:
+    "@uifabric/merge-styles" "^7.11.1"
+    "@uifabric/set-version" "^7.0.11"
+    prop-types "^15.7.2"
+    tslib "^1.10.0"
+
+"@uifabric/variants@^7.1.50":
+  version "7.1.50"
+  resolved "https://registry.npm.taobao.org/@uifabric/variants/download/@uifabric/variants-7.1.50.tgz#c289695a25aee54e4a94d375079a62857e796986"
+  integrity sha1-wolpWiWu5U5KlNN1B5pihX55aYY=
+  dependencies:
+    "@uifabric/set-version" "^7.0.11"
+    office-ui-fabric-react "^7.107.5"
+    tslib "^1.10.0"
 
 "@webassemblyjs/ast@1.8.5":
   version "1.8.5"
@@ -7043,6 +7197,24 @@ obuf@^1.0.0, obuf@^1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/obuf/-/obuf-1.1.2.tgz#09bea3343d41859ebd446292d11c9d4db619084e"
   integrity sha512-PX1wu0AmAdPqOL1mWhqmlOd8kOIZQwGZw6rh7uby9fTc5lhaOWFLX3I6R1hrF9k3zUY40e6igsLGkDXK92LJNg==
+
+office-ui-fabric-react@^7.107.5:
+  version "7.107.5"
+  resolved "https://registry.npm.taobao.org/office-ui-fabric-react/download/office-ui-fabric-react-7.107.5.tgz#7958e7f76c7fefc17e59039dde169fb72e337424"
+  integrity sha1-eVjn92x/78F+WQOd3hafty4zdCQ=
+  dependencies:
+    "@fluentui/react-focus" "^7.5.0"
+    "@fluentui/react-icons" "^0.1.6"
+    "@microsoft/load-themed-styles" "^1.10.26"
+    "@uifabric/foundation" "^7.7.5"
+    "@uifabric/icons" "^7.3.31"
+    "@uifabric/merge-styles" "^7.11.1"
+    "@uifabric/react-hooks" "^7.2.0"
+    "@uifabric/set-version" "^7.0.11"
+    "@uifabric/styling" "^7.11.8"
+    "@uifabric/utilities" "^7.15.11"
+    prop-types "^15.7.2"
+    tslib "^1.10.0"
 
 on-finished@~2.3.0:
   version "2.3.0"
