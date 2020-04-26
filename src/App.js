@@ -1,7 +1,7 @@
 import React from 'react';
 import MonacoEditor from 'react-monaco-editor';
-import {DefaultButton, Stack, IStackTokens, Text } from "office-ui-fabric-react";
-import { Card } from '@uifabric/react-cards';
+import { DefaultButton, Stack, IStackTokens, Text } from "office-ui-fabric-react";
+import { assemble } from "./asm"
 
 const stackTokens: IStackTokens = { childrenGap: 40 };
 
@@ -25,14 +25,14 @@ class App extends React.Component {
     this.editor = editor;
   };
 
-  assemble = () => {
+  assembleBtnFunc = () => {
     if (this.editor) {
       const code = this.editor.getValue();
       this.setState({
         code: code,
-        result: code
+        result: assemble(code)
       })
-      console.log(code)
+      // console.log(code)
       // this.resultCard.set(code);
       // alert(code);
     }
@@ -51,33 +51,25 @@ class App extends React.Component {
         <div>
           <div>
             <Stack horizontal tokens={stackTokens}>
-              <DefaultButton text="Assemble" onClick={this.assemble} />
+              <DefaultButton text="Assemble" onClick={this.assembleBtnFunc} />
             </Stack>
           </div>
           <hr />
-          <Stack horizontal tokens={stackTokens}>
-            <MonacoEditor
-                height="400"
-                width="50%"
-                language="mips"
-                value={code}
-                options={options}
-                onChange={this.onChange}
-                editorDidMount={this.editorDidMount}
-                theme={theme}
-            />
-            <Card
-                width="50%"
-                aria-label="Basic vertical card">
-              <Card.Item>
-                <Text >
-                  {this.state.result.split("\n").map((i,key) => {
-                  return <div key={key}>{i}</div>;
-                  })}
-                </Text>
-              </Card.Item>
-            </Card>
-          </Stack>
+          <MonacoEditor
+              height="400"
+              width="100%"
+              language="mips"
+              value={code}
+              options={options}
+              onChange={this.onChange}
+              editorDidMount={this.editorDidMount}
+              theme={theme}
+          />
+          <Text>
+            {this.state.result.split("\n").map((i,key) => {
+            return <div key={key}>{i}</div>;
+            })}
+          </Text>
         </div>
     );
   }
