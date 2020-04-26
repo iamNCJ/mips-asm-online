@@ -1,4 +1,4 @@
-function assemble(mipsCode: string): string {
+function assemble(mipsCode: string, isDebug: boolean = true): string {
     let res = '';
     const lines = mipsCode.trim().split('\n');
     let ins_list = [];
@@ -21,7 +21,12 @@ function assemble(mipsCode: string): string {
         temp.push(i) // push line number for error result
         ins_list.push(temp);
     }
-    res = parse(ins_list);
+    if (isDebug) {
+        res += "Debug:\n";
+    } else {
+        res += "memory_initialization_radix=16;\nmemory_initialization_vector=\n";
+    }
+    res += parse(ins_list, !isDebug);
     return res;
 }
 
@@ -37,12 +42,24 @@ const reg = {
     '$gp': "11100", '$sp': "11101", '$fp': "11110", '$ra': "11111"
 };
 
-function parse(ins: Array): string {
+function parse(ins: Array, isHex: boolean = true): string {
     let res = "";
     for (let i = 0, len = ins.length; i < len; i++) {
         try {
-            res += ('00000000' + op_set[ins[i][0]](ins[i].slice(1, ins[i].length - 1)).toString(16).toUpperCase()).slice(-8);
-            res += ",";
+            if (isHex) {
+                res += ('00000000' + op_set[ins[i][0]](ins[i].slice(1, ins[i].length - 1)).toString(16).toUpperCase()).slice(-8);
+                if (i !== len - 1) {
+                    res += ", ";
+                    if (i % 8 === 7) {
+                        res += "\n";
+                    }
+                } else {
+                    res += ";";
+                }
+            } else { // is Binary
+                res += i.toString() + ": " + ('00000000000000000000000000000000' +
+                    op_set[ins[i][0]](ins[i].slice(1, ins[i].length - 1)).toString(2).toUpperCase()).slice(-32) + "\n";
+            }
         } catch (err) {
             if (err.name === 'TypeError') {
                 res = "[Error] Line " + (ins[i][ins[i].length - 1] + 1).toString() + ": no such instruction '" + ins[i][0] + "'"

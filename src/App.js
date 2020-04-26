@@ -1,6 +1,6 @@
 import React from 'react';
 import MonacoEditor from 'react-monaco-editor';
-import { DefaultButton, Stack, IStackTokens, Text } from "office-ui-fabric-react";
+import {DefaultButton, Stack, IStackTokens, Text, Toggle} from "office-ui-fabric-react";
 import { assemble } from "./asm"
 
 const stackTokens: IStackTokens = { childrenGap: 40 };
@@ -10,6 +10,7 @@ class App extends React.Component {
     super();
     this.state = {
       code: "# type your code... \n",
+      debug: false,
       theme: "vs-dark",
       result: "Result"
     };
@@ -21,20 +22,26 @@ class App extends React.Component {
 
   editorDidMount = (editor) => {
     // eslint-disable-next-line no-console
-    console.log("editorDidMount", editor, editor.getValue(), editor.getModel());
+    // console.log("editorDidMount", editor, editor.getValue(), editor.getModel());
     this.editor = editor;
   };
+
+  onChangeDebug = (ev: React.MouseEvent<HTMLElement>, checked: boolean) => {
+    this.setState( prevState => {
+      return {
+        debug: checked
+      }
+    });
+  }
 
   assembleBtnFunc = () => {
     if (this.editor) {
       const code = this.editor.getValue();
-      this.setState({
-        code: code,
-        result: assemble(code)
+      this.setState( prevState => {
+        return {
+          result: assemble(code, this.state.debug)
+        }
       })
-      // console.log(code)
-      // this.resultCard.set(code);
-      // alert(code);
     }
   };
 
@@ -52,6 +59,7 @@ class App extends React.Component {
           <div>
             <Stack horizontal tokens={stackTokens}>
               <DefaultButton text="Assemble" onClick={this.assembleBtnFunc} />
+              <Toggle label="Debug Mode" inlineLabel onText="On" offText="Off" onChange={this.onChangeDebug} />
             </Stack>
           </div>
           <hr />
