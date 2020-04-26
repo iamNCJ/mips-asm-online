@@ -13,7 +13,7 @@ function assemble(mipsCode: string): string {
         if (j >= 0) {
             lines[i] = lines[i].slice(0, j);
         }
-        let temp = lines[i].replace(',', ' ').replace(';', ' ');
+        let temp = lines[i].replace(/,/g, ' ').replace(/;/g, ' ');
         // console.log(temp)
         temp = temp.trim().split(/\s+/);
         // ignore comment line
@@ -41,26 +41,34 @@ function parse(ins: Array): string {
     let res = "";
     for (let i = 0, len = ins.length; i < len; i++) {
         try {
-            res += op_set[ins[i][0]](ins[i].slice(1, ins[i].length - 1));
+            res += ('00000000' + op_set[ins[i][0]](ins[i].slice(1, ins[i].length - 1)).toString(16).toUpperCase()).slice(-8);
             res += ",";
         } catch (err) {
-            res = "[Error] Line " + (ins[i][ins[i].length - 1] + 1).toString() + ": " + err.toString();
+            if (err.name === 'TypeError') {
+                res = "[Error] Line " + (ins[i][ins[i].length - 1] + 1).toString() + ": no such instruction '" + ins[i][0] + "'"
+            } else {
+                res = "[Error] Line " + (ins[i][ins[i].length - 1] + 1).toString() + ": " + err.toString();
+            }
             break;
         }
     }
     return res;
 }
 
-function Add(ops: Array): string {
+function Add(ops: Array): number {
     if (ops.length !== 3) {
         throw "`add` instruction needs rs, rt, rd";
     }
-    let rs = reg[ops[0]], rt = reg[ops[1]], rd = reg[ops[2]];
-    if (rs === undefined || rt === undefined || rd === undefined) {
-        throw "Register not exist";
+    let regs = []
+    for (let i = 0; i < 3; i++) {
+        regs.push(reg[ops[i]]);
+        if (regs[i] === undefined) {
+            throw "Register '" + ops[i] + "' not exist";
+        }
     }
-    let op = '000000', sh_amt = "00000", func = "100000";
-    return "";
+    const op = '000000', sh_amt = '00000', func = '100000';
+    // console.log(op + regs[1] + regs[2] + regs[0] + sh_amt + func);
+    return parseInt(op + regs[1] + regs[2] + regs[0] + sh_amt + func, 2);
 }
 
 module.exports = {
