@@ -9,7 +9,7 @@ class App extends React.Component {
   constructor() {
     super();
     this.state = {
-      code: "// type your code... \n",
+      code: "# type your code... \n",
       theme: "vs-dark",
       result: "Result"
     };
@@ -65,6 +65,7 @@ class App extends React.Component {
               editorDidMount={this.editorDidMount}
               theme={theme}
           />
+          <hr />
           <Text>
             {this.state.result.split("\n").map((i,key) => {
             return <div key={key}>{i}</div>;
