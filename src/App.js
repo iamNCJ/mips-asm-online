@@ -17,6 +17,7 @@ class App extends React.Component {
   }
 
   onChange = (newValue) => {
+    this.setState({code: newValue});
     // console.log("onChange", newValue); // eslint-disable-line no-console
   };
 
@@ -27,21 +28,18 @@ class App extends React.Component {
   };
 
   onChangeDebug = (ev: React.MouseEvent<HTMLElement>, checked: boolean) => {
-    this.setState( prevState => {
-      return {
+    this.setState( {
         debug: checked
-      }
     });
   }
 
   assembleBtnFunc = () => {
     if (this.editor) {
       const code = this.editor.getValue();
-      this.setState( prevState => {
-        return {
+      this.setState({
           result: assemble(code, this.state.debug)
         }
-      })
+      )
     }
   };
 

@@ -26,13 +26,21 @@ function assemble(mipsCode: string, isDebug: boolean = true): string {
     } else {
         res += "memory_initialization_radix=16;\nmemory_initialization_vector=\n";
     }
-    res += parse(ins_list, !isDebug);
+    try {
+        res += parse(ins_list, !isDebug);
+    } catch (err) {
+        res = err.toString();
+    }
     return res;
 }
 
-const op_set = {'add': Add,};
-// 'addi':Addi,'sub':Sub,'nor':Nor,'and':And,'andi':Andi,'or':Or,'ori':Ori,'lw':Lw,'sw':Sw,'j':J,
-//     'jr':Jr,'jal':Jal,'beq':Beq,'bne':Bne,'sll':Sll,'srl':Srl,'slt':Slt,'slti':Slti
+const op_set = {
+    // R-type
+    'add': R_basic, 'addu': R_basic, 'sub': R_basic, 'subu': R_basic, 'and': R_basic, 'or': R_basic, 'xor': R_basic,
+    'nor': R_basic, 'slt': R_basic, 'sltu': R_basic, 'sllv': R_basic, 'srlv': R_basic, 'srav': R_basic,
+};
+
+// 'addi':Addi,'andi':Andi,,'ori':Ori,'lw':Lw,'sw':Sw,'j':J, 'jr':Jr,'jal':Jal,'beq':Beq,'bne':Bne,'sll':Sll,'srl':Srl,'slti':Slti
 
 const reg = {
     '$zero': "00000", '$at': "00001", '$v0': "00010", '$v1': "00011", '$a0': "00100", '$a1': "00101", '$a2': "00110",
@@ -46,8 +54,9 @@ function parse(ins: Array, isHex: boolean = true): string {
     let res = "";
     for (let i = 0, len = ins.length; i < len; i++) {
         try {
+            let ins_code = op_set[ins[i][0]](ins[i]);
             if (isHex) {
-                res += ('00000000' + op_set[ins[i][0]](ins[i].slice(1, ins[i].length - 1)).toString(16).toUpperCase()).slice(-8);
+                res += ('00000000' + ins_code.toString(16).toUpperCase()).slice(-8);
                 if (i !== len - 1) {
                     res += ", ";
                     if (i % 8 === 7) {
@@ -58,32 +67,35 @@ function parse(ins: Array, isHex: boolean = true): string {
                 }
             } else { // is Binary
                 res += i.toString() + ": " + ('00000000000000000000000000000000' +
-                    op_set[ins[i][0]](ins[i].slice(1, ins[i].length - 1)).toString(2).toUpperCase()).slice(-32) + "\n";
+                    ins_code.toString(2).toUpperCase()).slice(-32) + "\n";
             }
         } catch (err) {
             if (err.name === 'TypeError') {
-                res = "[Error] Line " + (ins[i][ins[i].length - 1] + 1).toString() + ": no such instruction '" + ins[i][0] + "'"
+                throw Error("Line " + (ins[i][ins[i].length - 1] + 1).toString() + ": no such instruction '" + ins[i][0] + "'");
             } else {
-                res = "[Error] Line " + (ins[i][ins[i].length - 1] + 1).toString() + ": " + err.toString();
+                throw Error("Line " + (ins[i][ins[i].length - 1] + 1).toString() + ": " + err.message);
             }
-            break;
         }
     }
     return res;
 }
 
-function Add(ops: Array): number {
-    if (ops.length !== 3) {
-        throw "`add` instruction needs rs, rt, rd";
+function R_basic(ops: Array): number {
+    if (ops.length !== 5) { // ins rs, rt, rd, line-num
+        throw Error( "R-type instruction `" + ops[0] + "` needs rs, rt, rd");
     }
-    let regs = []
-    for (let i = 0; i < 3; i++) {
+    let regs = [];
+    for (let i = 1; i < 4; i++) {
         regs.push(reg[ops[i]]);
-        if (regs[i] === undefined) {
-            throw "Register '" + ops[i] + "' not exist";
+        if (regs[i - 1] === undefined) {
+            throw Error("Register '" + ops[i] + "' not exist");
         }
     }
-    const op = '000000', sh_amt = '00000', func = '100000';
+    const funcCodes = {
+        'add': '100000', 'addu': '100001', 'sub': '100010', 'subu': '100011', 'and': '100100', 'or': '100101', 'xor': '100110',
+        'nor': '100111', 'slt': '101010', 'sltu': '101011', 'sllv': '000100', 'srlv': '000110', 'srav': '000111'
+    };
+    const op = '000000', sh_amt = '00000', func = funcCodes[ops[0]];
     // console.log(op + regs[1] + regs[2] + regs[0] + sh_amt + func);
     return parseInt(op + regs[1] + regs[2] + regs[0] + sh_amt + func, 2);
 }
