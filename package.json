@@ -23,7 +23,7 @@
   "eslintConfig": {
     "extends": "react-app"
   },
-  "homepage": "https://ncj.wiki/mips-asm-online/",
+  "homepage": "http://ncj.wiki/mips-asm-online/",
   "browserslist": {
     "production": [
       ">0.2%",
