@@ -38,6 +38,7 @@ const op_set = {
     // R-type
     'add': R_basic, 'addu': R_basic, 'sub': R_basic, 'subu': R_basic, 'and': R_basic, 'or': R_basic, 'xor': R_basic,
     'nor': R_basic, 'slt': R_basic, 'sltu': R_basic, 'sllv': R_basic, 'srlv': R_basic, 'srav': R_basic,
+    'sll': R_plus, 'srl': R_plus, 'sra': R_plus,
 };
 
 // 'addi':Addi,'andi':Andi,,'ori':Ori,'lw':Lw,'sw':Sw,'j':J, 'jr':Jr,'jal':Jal,'beq':Beq,'bne':Bne,'sll':Sll,'srl':Srl,'slti':Slti
@@ -67,7 +68,7 @@ function parse(ins: Array, isHex: boolean = true): string {
                 }
             } else { // is Binary
                 res += i.toString() + ": " + ('00000000000000000000000000000000' +
-                    ins_code.toString(2).toUpperCase()).slice(-32) + "\n";
+                    ins_code.toString(2)).slice(-32) + "\n";
             }
         } catch (err) {
             if (err.name === 'TypeError') {
@@ -96,8 +97,30 @@ function R_basic(ops: Array): number {
         'nor': '100111', 'slt': '101010', 'sltu': '101011', 'sllv': '000100', 'srlv': '000110', 'srav': '000111'
     };
     const op = '000000', sh_amt = '00000', func = funcCodes[ops[0]];
-    // console.log(op + regs[1] + regs[2] + regs[0] + sh_amt + func);
     return parseInt(op + regs[1] + regs[2] + regs[0] + sh_amt + func, 2);
+}
+
+function R_plus(ops: Array): number {
+    if (ops.length !== 5) { // ins rs, rt, rd, line-num
+        throw Error( "R-type instruction `" + ops[0] + "` needs rs, rt, rd");
+    }
+    let regs = [];
+    for (let i = 1; i < 3; i++) {
+        regs.push(reg[ops[i]]);
+        if (regs[i - 1] === undefined) {
+            throw Error("Register '" + ops[i] + "' not exist");
+        }
+    }
+    const funcCodes = {
+        'sll': '000000', 'srl': '000010', 'sra': '000011'
+    };
+    const func = funcCodes[ops[0]];
+    const immediate = parseInt(ops[3]);
+    if (immediate > 31 || immediate < 0) {
+        throw Error('Illegal operand: Shift amount length out of range');
+    }
+    const sh_amt = ('00000' + immediate.toString(2)).slice(-5);
+    return parseInt('00000000000' + regs[1] + regs[0] + sh_amt + func, 2);
 }
 
 module.exports = {
