@@ -2,6 +2,8 @@ import React from 'react';
 import MonacoEditor from 'react-monaco-editor';
 import { Range } from 'monaco-editor';
 import { DefaultButton, Stack, IStackTokens, Text, Toggle } from "office-ui-fabric-react";
+
+import "./App.css"
 import { assemble } from "./asm"
 
 const stackTokens: IStackTokens = { childrenGap: 40 };
