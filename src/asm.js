@@ -65,10 +65,10 @@ const op_set = {
     'sll': R_plus, 'srl': R_plus, 'sra': R_plus, 'jr': R_jr,
     // I-type
     'addi': I_basic, 'addiu': I_basic, 'andi': I_basic, 'ori': I_basic, 'xori': I_basic, 'slti': I_basic, 'sltiu': I_basic,
-    'beq': I_basic, 'bne': I_basic, 'lw': I_mem, 'sw': I_mem, 'lui': I_lui
+    'beq': I_basic, 'bne': I_basic, 'lw': I_mem, 'sw': I_mem, 'lui': I_lui,
+    // J-type
+    'j': J_basic, 'jal': J_basic
 };
-
-// 'j':J, 'jal':Jal, lui
 
 const reg = {
     '$zero': "00000", '$at': "00001", '$v0': "00010", '$v1': "00011", '$a0': "00100", '$a1': "00101", '$a2': "00110",
@@ -260,6 +260,31 @@ function I_lui(ops: Array): number {
         throw Error('Illegal operand: Immediate length too long');
     }
     return parseInt('00111100000' + rt + imm, 2);
+}
+
+function J_basic(ops: Array, labelList: JSON):number {
+    if (ops.length !== 3) { // ins addr ins-num
+        throw Error("J-type instruction `" + ops[0] + "` needs address");
+    }
+    const opCodes = {
+        'j': '000010',
+        'jal': '000011'
+    }
+    const op = opCodes[ops[0]];
+    let immediate = parseInt(ops[1]);
+    if (isNaN(immediate)) { // must be a label
+        immediate = labelList[ops[1]];
+        if (isNaN(immediate)) { // no such label
+            throw Error("Undefined label: Label name: " + ops[1]);
+        }
+    }
+    let addr = '';
+    if (immediate >= 0 && immediate <= 67108863) {
+        addr = ('00000000000000000000000000' + immediate.toString(2)).slice(-26);
+    } else {
+        throw Error('Illegal address: address ' + ops[1] + ' out of range');
+    }
+    return parseInt(op + addr, 2);
 }
 
 class ParseError extends Error {
