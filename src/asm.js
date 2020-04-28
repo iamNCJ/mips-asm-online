@@ -1,7 +1,7 @@
 function assemble(mipsCode: string, isDebug: boolean = true): string {
     let res = '';
     const lines = mipsCode.trim().split('\n');
-    let ins_list = [];
+    let insList = [];
     for (let i = 0, len = lines.length; i < len; i++) {
         // Remove '//' comments
         let j = lines[i].search('//')
@@ -13,13 +13,19 @@ function assemble(mipsCode: string, isDebug: boolean = true): string {
         if (j >= 0) {
             lines[i] = lines[i].slice(0, j);
         }
-
-        let temp = lines[i].replace(/,/g, ' ').replace(/;/g, ' ');
-        temp = temp.trim().split(/\s+/);
-        // ignore comment line
-        if (temp.length === 1 && temp[0] === "") continue;
-        temp.push(i) // push line number for error result
-        ins_list.push(temp);
+        let singleLine = lines[i].split(';');
+        for (let k = 0, _len = singleLine.length; k < _len; k++) {
+            let singleIns = singleLine[k].replace(/,/g, ' ').trim().split(/\s+/);
+            if (singleIns.length === 1 && singleIns[0] === "") continue; // ignore comment line
+            singleIns.push(i); // push line number for error result
+            insList.push(singleIns);
+        }
+        // let temp = lines[i].replace(/,/g, ' ').replace(/;/g, ' ');
+        // temp = temp.trim().split(/\s+/);
+        // // ignore comment line
+        // if (temp.length === 1 && temp[0] === "") continue;
+        // temp.push(i) // push line number for error result
+        // insList.push(temp);
     }
     if (isDebug) {
         res += "Debug:\n";
@@ -27,7 +33,7 @@ function assemble(mipsCode: string, isDebug: boolean = true): string {
         res += "memory_initialization_radix=16;\nmemory_initialization_vector=\n";
     }
     try {
-        res += parse(ins_list, !isDebug);
+        res += parse(insList, !isDebug);
     } catch (err) {
         throw err;
     }
