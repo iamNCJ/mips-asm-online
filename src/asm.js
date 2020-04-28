@@ -2,9 +2,11 @@ function assemble(mipsCode: string, isDebug: boolean = true): string {
     let res = '';
     const lines = mipsCode.trim().split('\n');
     let insList = [];
+    let labelList = {};
+    let pendingLabel = '';
     for (let i = 0, len = lines.length; i < len; i++) {
         // Remove '//' comments
-        let j = lines[i].search('//')
+        let j = lines[i].search('//');
         if (j >= 0) {
             lines[i] = lines[i].slice(0, j);
         }
@@ -13,19 +15,32 @@ function assemble(mipsCode: string, isDebug: boolean = true): string {
         if (j >= 0) {
             lines[i] = lines[i].slice(0, j);
         }
-        let singleLine = lines[i].split(';');
+        let singleLine = lines[i].replace(":", ':;').split(';');
         for (let k = 0, _len = singleLine.length; k < _len; k++) {
-            let singleIns = singleLine[k].replace(/,/g, ' ').trim().split(/\s+/);
-            if (singleIns.length === 1 && singleIns[0] === "") continue; // ignore comment line
-            singleIns.push(i); // push line number for error result
-            insList.push(singleIns);
+            if (singleLine[k][singleLine[k].length - 1] === ':') { // label
+                if (pendingLabel === '') {
+                    let currentLabel = singleLine[k].replace(':', ' ').trim();
+                    if (labelList[currentLabel] === undefined) {
+                        pendingLabel = currentLabel;
+                    } else {
+                        throw new ParseError(i + 1, 'Label already defined: Label: ' + currentLabel +
+                            ', old address: ' + labelList[currentLabel].toString() + ', new address: ' + (insList.length * 4).toString());
+                    }
+                } else { // has pending label
+                    throw new ParseError(i + 1, 'Multiple pending label: Pending label: ' + pendingLabel +
+                        ', new label: ' + singleLine[k].replace(':', ' ').trim());
+                }
+            } else { // instruction
+                let singleIns = singleLine[k].replace(/,/g, ' ').trim().split(/\s+/);
+                if (singleIns.length === 1 && singleIns[0] === "") continue; // ignore comment or empty line
+                singleIns.push(i); // push line number for error result
+                insList.push(singleIns);
+                if (pendingLabel !== '') {
+                    labelList[pendingLabel] = (insList.length - 1) * 4;
+                    pendingLabel = '';
+                }
+            }
         }
-        // let temp = lines[i].replace(/,/g, ' ').replace(/;/g, ' ');
-        // temp = temp.trim().split(/\s+/);
-        // // ignore comment line
-        // if (temp.length === 1 && temp[0] === "") continue;
-        // temp.push(i) // push line number for error result
-        // insList.push(temp);
     }
     if (isDebug) {
         res += "Debug:\n";
