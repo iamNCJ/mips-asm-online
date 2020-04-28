@@ -15,7 +15,7 @@ function assemble(mipsCode: string, isDebug: boolean = true): string {
         if (j >= 0) {
             lines[i] = lines[i].slice(0, j);
         }
-        let singleLine = lines[i].replace(":", ':;').split(';');
+        let singleLine = lines[i].replace(/:/g, ':;').split(';');
         for (let k = 0, _len = singleLine.length; k < _len; k++) {
             if (singleLine[k][singleLine[k].length - 1] === ':') { // label
                 if (pendingLabel === '') {
@@ -33,7 +33,8 @@ function assemble(mipsCode: string, isDebug: boolean = true): string {
                         ', new label: ' + singleLine[k].replace(':', ' ').trim());
                 }
             } else { // instruction
-                let singleIns = singleLine[k].replace(/,/g, ' ').trim().split(/\s+/);
+                let singleIns = singleLine[k].replace(/,/g, ' ').replace(/\(/g, ' ')
+                    .replace(/\)/g, ' ').trim().split(/\s+/);
                 if (singleIns.length === 1 && singleIns[0] === "") continue; // ignore comment or empty line
                 singleIns.push(i); // push line number for error result
                 insList.push(singleIns);
@@ -64,10 +65,10 @@ const op_set = {
     'sll': R_plus, 'srl': R_plus, 'sra': R_plus, 'jr': R_jr,
     // I-type
     'addi': I_basic, 'addiu': I_basic, 'andi': I_basic, 'ori': I_basic, 'xori': I_basic, 'slti': I_basic, 'sltiu': I_basic,
-    'beq': I_basic, 'bne': I_basic,
+    'beq': I_basic, 'bne': I_basic, 'lw': I_mem, 'sw': I_mem
 };
 
-// 'lw':Lw,'sw':Sw,'j':J, 'jr':Jr,'jal':Jal,
+// 'j':J, 'jal':Jal, lui
 
 const reg = {
     '$zero': "00000", '$at': "00001", '$v0': "00010", '$v1': "00011", '$a0': "00100", '$a1': "00101", '$a2': "00110",
@@ -212,6 +213,34 @@ function I_basic(ops: Array, labelList: JSON): number {
         throw Error('Illegal operand: Immediate length too long');
     }
     return parseInt(op + regs[1] + regs[0] + imm, 2);
+}
+
+function I_mem(ops: Array): number {
+    if (ops.length !== 5) { // ins rs rt imm ins-num
+        throw Error("I-type instruction `" + ops[0] + "` needs rs, rt, immediate");
+    }
+    const opCodes = {
+        'lw': '100011',
+        'sw': '101011'
+    }
+    const op = opCodes[ops[0]];
+    const rs = reg[ops[3]];
+    if (rs === undefined) {
+        throw Error("Register '" + ops[3] + "' not exist");
+    }
+    const rt = reg[ops[1]];
+    if (rt === undefined) {
+        throw Error("Register '" + ops[1] + "' not exist");
+    }
+    let imm = '', immediate = parseInt(ops[2]);
+    if (immediate >= 0 && immediate <= 65535) {
+        imm = ('0000000000000000' + immediate.toString(2)).slice(-16);
+    } else if (immediate <= 0 && immediate >= -32768) {
+        imm = ((-1 - immediate) ^ (2 ** 16 - 1)).toString(2);
+    } else {
+        throw Error('Illegal operand: Immediate length too long');
+    }
+    return parseInt(op + rs + rt + imm, 2);
 }
 
 class ParseError extends Error {
