@@ -4,7 +4,7 @@ import {Range} from 'monaco-editor';
 import {DefaultButton, Stack, IStackTokens, Text, Toggle} from "office-ui-fabric-react";
 
 import "./App.css"
-import {assemble} from "./asm"
+import assemble from "./asm"
 
 const stackTokens: IStackTokens = {childrenGap: 40};
 
@@ -52,7 +52,7 @@ class App extends React.Component {
             } catch (err) {
                 if (err.name === 'ParseError') {
                     console.log();
-                    this.setState( {
+                    this.setState({
                             result: err.name + ': Line ' + err.lineNum + ': ' + err.message,
                             errorLine: this.editor.deltaDecorations(this.state.errorLine, [{
                                 range: new Range(err.lineNum, 1, err.lineNum, 1),

@@ -306,6 +306,8 @@ class ParseError extends Error {
     }
 }
 
-module.exports = {
-    assemble
-}
+// module.exports = {
+//     assemble
+// }
+
+export default assemble;
