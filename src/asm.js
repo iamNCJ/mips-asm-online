@@ -20,11 +20,13 @@ function assemble(mipsCode: string, isDebug: boolean = true): string {
             if (singleLine[k][singleLine[k].length - 1] === ':') { // label
                 if (pendingLabel === '') {
                     let currentLabel = singleLine[k].replace(':', ' ').trim();
-                    if (labelList[currentLabel] === undefined) {
+                    if (!isNaN(parseInt(currentLabel))) { // starts with number
+                        throw new ParseError(i + 1, 'Illegal label: Label: ' + currentLabel);
+                    } else if (labelList[currentLabel] === undefined) {
                         pendingLabel = currentLabel;
                     } else {
                         throw new ParseError(i + 1, 'Label already defined: Label: ' + currentLabel +
-                            ', old address: ' + labelList[currentLabel].toString() + ', new address: ' + (insList.length * 4).toString());
+                            ', old address: ' + (labelList[currentLabel] * 4).toString() + ', new address: ' + (insList.length * 4).toString());
                     }
                 } else { // has pending label
                     throw new ParseError(i + 1, 'Multiple pending label: Pending label: ' + pendingLabel +
@@ -36,7 +38,7 @@ function assemble(mipsCode: string, isDebug: boolean = true): string {
                 singleIns.push(i); // push line number for error result
                 insList.push(singleIns);
                 if (pendingLabel !== '') {
-                    labelList[pendingLabel] = (insList.length - 1) * 4;
+                    labelList[pendingLabel] = insList.length - 1;
                     pendingLabel = '';
                 }
             }
@@ -48,7 +50,7 @@ function assemble(mipsCode: string, isDebug: boolean = true): string {
         res += "memory_initialization_radix=16;\nmemory_initialization_vector=\n";
     }
     try {
-        res += parse(insList, !isDebug);
+        res += parse(insList, !isDebug, labelList);
     } catch (err) {
         throw err;
     }
@@ -62,9 +64,10 @@ const op_set = {
     'sll': R_plus, 'srl': R_plus, 'sra': R_plus,
     // I-type
     'addi': I_basic, 'addiu': I_basic, 'andi': I_basic, 'ori': I_basic, 'xori': I_basic, 'slti': I_basic, 'sltiu': I_basic,
+    'beq': I_basic, 'bne': I_basic,
 };
 
-// 'lw':Lw,'sw':Sw,'j':J, 'jr':Jr,'jal':Jal,'beq':Beq,'bne':Bne,
+// 'lw':Lw,'sw':Sw,'j':J, 'jr':Jr,'jal':Jal,
 
 const reg = {
     '$zero': "00000", '$at': "00001", '$v0': "00010", '$v1': "00011", '$a0': "00100", '$a1': "00101", '$a2': "00110",
@@ -74,12 +77,14 @@ const reg = {
     '$gp': "11100", '$sp': "11101", '$fp': "11110", '$ra': "11111"
 };
 
-function parse(ins: Array, isHex: boolean = true): string {
+function parse(ins: Array, isHex: boolean = true, labelList: JSON = {}): string {
     let res = "";
     for (let i = 0, len = ins.length; i < len; i++) {
+        const curLine = ins[i][ins[i].length - 1] + 1;
         try {
-            let ins_code = op_set[ins[i][0]](ins[i]);
-            if (isHex) {
+            ins[i][ins[i].length - 1] = i; // change last element from lineNum to insNum
+            let ins_code = op_set[ins[i][0]](ins[i], labelList);
+            if (isHex) { // to Hex
                 res += ('00000000' + ins_code.toString(16).toUpperCase()).slice(-8);
                 if (i !== len - 1) {
                     res += ", ";
@@ -89,15 +94,15 @@ function parse(ins: Array, isHex: boolean = true): string {
                 } else {
                     res += ";";
                 }
-            } else { // is Binary
+            } else { // to Binary
                 res += i.toString() + ": " + ('00000000000000000000000000000000' +
                     ins_code.toString(2)).slice(-32) + "\n";
             }
         } catch (err) {
             if (err.name === 'TypeError') {
-                throw new ParseError(ins[i][ins[i].length - 1] + 1, "no such instruction '" + ins[i][0] + "'");
+                throw new ParseError(curLine, "no such instruction '" + ins[i][0] + "'");
             } else {
-                throw new ParseError(ins[i][ins[i].length - 1] + 1, err.message);
+                throw new ParseError(curLine, err.message);
             }
         }
     }
@@ -153,11 +158,14 @@ function R_plus(ops: Array): number {
     if (immediate > 31 || immediate < 0) {
         throw Error('Illegal operand: Shift amount length out of range');
     }
-    const sh_amt = ('00000' + immediate.toString(2)).slice(-5);
-    return parseInt('00000000000' + regs[1] + regs[0] + sh_amt + func, 2);
+    const shamt = ('00000' + immediate.toString(2)).slice(-5);
+    return parseInt('00000000000' + regs[1] + regs[0] + shamt + func, 2);
 }
 
-function I_basic(ops: Array): number {
+function R_jr(ops: Array): number {
+}
+
+function I_basic(ops: Array, labelList: JSON): number {
     if (ops.length !== 5) { // ins rs, rt, immediate, line-num
         throw Error("I-type instruction `" + ops[0] + "` needs rs, rt, imm");
     }
@@ -168,7 +176,9 @@ function I_basic(ops: Array): number {
         'ori': '001110',
         'xori': '001110',
         'slti': '001010',
-        'sltiu': '001011'
+        'sltiu': '001011',
+        'beq': '000100',
+        'bne': '000101'
     };
     const op = opCodes[ops[0]];
     let regs = [];
@@ -178,7 +188,13 @@ function I_basic(ops: Array): number {
             throw Error("Register '" + ops[i] + "' not exist");
         }
     }
-    const immediate = parseInt(ops[3]);
+    let immediate = parseInt(ops[3]);
+    if (isNaN(immediate)) { // must be a label
+        immediate = labelList[ops[3]] - ops[4] - 1;
+        if (isNaN(immediate)) { // no such label
+            throw Error("Undefined label: Label name: " + ops[3]);
+        }
+    }
     let imm = '';
     if (immediate >= 0 && immediate <= 65535) {
         imm = ('0000000000000000' + immediate.toString(2)).slice(-16);
