@@ -61,7 +61,7 @@ const op_set = {
     // R-type
     'add': R_basic, 'addu': R_basic, 'sub': R_basic, 'subu': R_basic, 'and': R_basic, 'or': R_basic, 'xor': R_basic,
     'nor': R_basic, 'slt': R_basic, 'sltu': R_basic, 'sllv': R_basic, 'srlv': R_basic, 'srav': R_basic,
-    'sll': R_plus, 'srl': R_plus, 'sra': R_plus,
+    'sll': R_plus, 'srl': R_plus, 'sra': R_plus, 'jr': R_jr,
     // I-type
     'addi': I_basic, 'addiu': I_basic, 'andi': I_basic, 'ori': I_basic, 'xori': I_basic, 'slti': I_basic, 'sltiu': I_basic,
     'beq': I_basic, 'bne': I_basic,
@@ -110,7 +110,7 @@ function parse(ins: Array, isHex: boolean = true, labelList: JSON = {}): string 
 }
 
 function R_basic(ops: Array): number {
-    if (ops.length !== 5) { // ins rs, rt, rd, line-num
+    if (ops.length !== 5) { // ins rs, rt, rd, ins-num
         throw Error("R-type instruction `" + ops[0] + "` needs rs, rt, rd");
     }
     let regs = [];
@@ -140,7 +140,7 @@ function R_basic(ops: Array): number {
 }
 
 function R_plus(ops: Array): number {
-    if (ops.length !== 5) { // ins rs, rt, shamt, line-num
+    if (ops.length !== 5) { // ins rs, rt, shamt, ins-num
         throw Error("R-type instruction `" + ops[0] + "` needs rs, rt, rd");
     }
     let regs = [];
@@ -163,10 +163,18 @@ function R_plus(ops: Array): number {
 }
 
 function R_jr(ops: Array): number {
+    if (ops.length !== 3) { // jr rs ins-num
+        throw Error("I-type instruction `" + ops[0] + "` needs rs");
+    }
+    const rs = reg[ops[1]];
+    if (rs === undefined) {
+        throw Error("Register '" + ops[1] + "' not exist");
+    }
+    return parseInt("000000" + rs + "000000000000000001000", 2);
 }
 
 function I_basic(ops: Array, labelList: JSON): number {
-    if (ops.length !== 5) { // ins rs, rt, immediate, line-num
+    if (ops.length !== 5) { // ins rs, rt, immediate, ins-num
         throw Error("I-type instruction `" + ops[0] + "` needs rs, rt, imm");
     }
     const opCodes = {
@@ -190,7 +198,7 @@ function I_basic(ops: Array, labelList: JSON): number {
     }
     let immediate = parseInt(ops[3]);
     if (isNaN(immediate)) { // must be a label
-        immediate = labelList[ops[3]] - ops[4] - 1;
+        immediate = labelList[ops[3]] - ops[4] - 1; // pc + 4 + offset * 4
         if (isNaN(immediate)) { // no such label
             throw Error("Undefined label: Label name: " + ops[3]);
         }
