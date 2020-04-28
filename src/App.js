@@ -1,6 +1,7 @@
 import React from 'react';
 import MonacoEditor from 'react-monaco-editor';
-import {DefaultButton, Stack, IStackTokens, Text, Toggle} from "office-ui-fabric-react";
+import { Range } from 'monaco-editor';
+import { DefaultButton, Stack, IStackTokens, Text, Toggle } from "office-ui-fabric-react";
 import { assemble } from "./asm"
 
 const stackTokens: IStackTokens = { childrenGap: 40 };
@@ -36,10 +37,29 @@ class App extends React.Component {
   assembleBtnFunc = () => {
     if (this.editor) {
       const code = this.editor.getValue();
-      this.setState({
-          result: assemble(code, this.state.debug)
-        }
-      )
+      try {
+          this.setState({
+                  result: assemble(code, this.state.debug)
+              }
+          );
+      } catch (err) {
+          if (err.name === 'ParseError') {
+              this.setState({
+                      result: err.name + ': Line ' + err.lineNum + ': ' + err.message
+                  }
+              );
+              var decorations = this.editor.deltaDecorations([], [
+                  {
+                      range: new Range(err.lineNum,1,err.lineNum,1),
+                      options: {
+                          isWholeLine: true,
+                          className: 'myContentClass',
+                          glyphMarginClassName: 'myGlyphMarginClass'
+                      }
+                  }
+              ]);
+          }
+      }
     }
   };
 
@@ -54,7 +74,7 @@ class App extends React.Component {
     };
     return (
         <div>
-          <div>
+          <div id="control">
             <Stack horizontal tokens={stackTokens}>
               <DefaultButton text="Assemble" onClick={this.assembleBtnFunc} />
               <Toggle label="Debug Mode" inlineLabel onText="On" offText="Off" onChange={this.onChangeDebug} />
