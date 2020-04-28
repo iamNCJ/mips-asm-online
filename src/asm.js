@@ -29,7 +29,7 @@ function assemble(mipsCode: string, isDebug: boolean = true): string {
     try {
         res += parse(ins_list, !isDebug);
     } catch (err) {
-        res = err.toString();
+        throw err;
     }
     return res;
 }
@@ -72,7 +72,7 @@ function parse(ins: Array, isHex: boolean = true): string {
             }
         } catch (err) {
             if (err.name === 'TypeError') {
-                throw new ParseError(ins[i][ins[i].length - 1] + 1, + "no such instruction '" + ins[i][0] + "'");
+                throw new ParseError(ins[i][ins[i].length - 1] + 1, "no such instruction '" + ins[i][0] + "'");
             } else {
                 throw new ParseError(ins[i][ins[i].length - 1] + 1, err.message);
             }
@@ -146,7 +146,7 @@ class ParseError extends Error {
 
         this.name = 'ParseError';
         // Custom debugging information
-        this.line = lineNum;
+        this.lineNum = lineNum;
     }
 }
 
