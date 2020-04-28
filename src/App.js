@@ -86,22 +86,27 @@ class App extends React.Component {
                     </Stack>
                 </div>
                 <hr/>
-                <MonacoEditor
-                    height="400"
-                    width="100%"
-                    language="mips"
-                    value={code}
-                    options={options}
-                    onChange={this.onChange}
-                    editorDidMount={this.editorDidMount}
-                    theme={theme}
-                />
+                <div id="editor">
+                    <MonacoEditor
+                        height="400"
+                        width="100%"
+                        language="mips"
+                        value={code}
+                        options={options}
+                        onChange={this.onChange}
+                        editorDidMount={this.editorDidMount}
+                        theme={theme}
+                    />
+                </div>
+
                 <hr/>
-                <Text>
-                    {this.state.result.split("\n").map((i, key) => {
-                        return <div key={key}>{i}</div>;
-                    })}
-                </Text>
+                <div id="result">
+                    <Text>
+                        {this.state.result.split("\n").map((i, key) => {
+                            return <div key={key}>{i}</div>;
+                        })}
+                    </Text>
+                </div>
             </div>
         );
     }

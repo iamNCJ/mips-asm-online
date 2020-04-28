@@ -6,6 +6,15 @@
   padding-left: 10px;
 }
 
+#result {
+  padding-left: 10px;
+}
+
+#editor {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
 .ErrorLine {
   background: red;
 }
