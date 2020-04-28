@@ -39,9 +39,11 @@ const op_set = {
     'add': R_basic, 'addu': R_basic, 'sub': R_basic, 'subu': R_basic, 'and': R_basic, 'or': R_basic, 'xor': R_basic,
     'nor': R_basic, 'slt': R_basic, 'sltu': R_basic, 'sllv': R_basic, 'srlv': R_basic, 'srav': R_basic,
     'sll': R_plus, 'srl': R_plus, 'sra': R_plus,
+    // I-type
+    'addi': I_type, 'addiu': I_type, 'andi': I_type, 'ori': I_type, 'xori': I_type, 'slti': I_type, 'sltiu': I_type,
 };
 
-// 'addi':Addi,'andi':Andi,,'ori':Ori,'lw':Lw,'sw':Sw,'j':J, 'jr':Jr,'jal':Jal,'beq':Beq,'bne':Bne,'sll':Sll,'srl':Srl,'slti':Slti
+// 'lw':Lw,'sw':Sw,'j':J, 'jr':Jr,'jal':Jal,'beq':Beq,'bne':Bne,
 
 const reg = {
     '$zero': "00000", '$at': "00001", '$v0': "00010", '$v1': "00011", '$a0': "00100", '$a1': "00101", '$a2': "00110",
@@ -132,6 +134,9 @@ function R_plus(ops: Array): number {
     }
     const sh_amt = ('00000' + immediate.toString(2)).slice(-5);
     return parseInt('00000000000' + regs[1] + regs[0] + sh_amt + func, 2);
+}
+
+function I_type(ops: Array):number {
 }
 
 class ParseError extends Error {
