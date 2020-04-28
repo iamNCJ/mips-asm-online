@@ -8,6 +8,9 @@ ReactDOM.render(
     <React.StrictMode>
         <h1>
             MIPS Assembler Online
+            <a href="https://github.com/iamNCJ/mips-asm-online/stargazers" id="star">
+                <img src="https://img.shields.io/github/stars/iamNCJ/mips-asm-online.svg?label=Stars&style=social" alt="Stars" />
+            </a>
         </h1>
         <App/>
     </React.StrictMode>,
