@@ -40,7 +40,7 @@ const op_set = {
     'nor': R_basic, 'slt': R_basic, 'sltu': R_basic, 'sllv': R_basic, 'srlv': R_basic, 'srav': R_basic,
     'sll': R_plus, 'srl': R_plus, 'sra': R_plus,
     // I-type
-    'addi': I_type, 'addiu': I_type, 'andi': I_type, 'ori': I_type, 'xori': I_type, 'slti': I_type, 'sltiu': I_type,
+    'addi': I_basic, 'addiu': I_basic, 'andi': I_basic, 'ori': I_basic, 'xori': I_basic, 'slti': I_basic, 'sltiu': I_basic,
 };
 
 // 'lw':Lw,'sw':Sw,'j':J, 'jr':Jr,'jal':Jal,'beq':Beq,'bne':Bne,
@@ -114,7 +114,7 @@ function R_basic(ops: Array): number {
 }
 
 function R_plus(ops: Array): number {
-    if (ops.length !== 5) { // ins rs, rt, rd, line-num
+    if (ops.length !== 5) { // ins rs, rt, shamt, line-num
         throw Error("R-type instruction `" + ops[0] + "` needs rs, rt, rd");
     }
     let regs = [];
@@ -136,7 +136,37 @@ function R_plus(ops: Array): number {
     return parseInt('00000000000' + regs[1] + regs[0] + sh_amt + func, 2);
 }
 
-function I_type(ops: Array):number {
+function I_basic(ops: Array): number {
+    if (ops.length !== 5) { // ins rs, rt, immediate, line-num
+        throw Error("I-type instruction `" + ops[0] + "` needs rs, rt, imm");
+    }
+    const opCodes = {
+        'addi': '001000',
+        'addiu': '001001',
+        'andi': '001100',
+        'ori': '001110',
+        'xori': '001110',
+        'slti': '001010',
+        'sltiu': '001011'
+    };
+    const op = opCodes[ops[0]];
+    let regs = [];
+    for (let i = 1; i < 3; i++) {
+        regs.push(reg[ops[i]]);
+        if (regs[i - 1] === undefined) {
+            throw Error("Register '" + ops[i] + "' not exist");
+        }
+    }
+    const immediate = parseInt(ops[3]);
+    let imm = '';
+    if (immediate >= 0 && immediate <= 65535) {
+        imm = ('0000000000000000' + immediate.toString(2)).slice(-16);
+    } else if (immediate <= 0 && immediate >= -32768) {
+        imm = ((-1 - immediate) ^ (2**16-1)).toString(2);
+    } else {
+        throw Error('Illegal operand: Immediate length too long');
+    }
+    return parseInt(op + regs[1] + regs[0] + imm, 2);
 }
 
 class ParseError extends Error {
