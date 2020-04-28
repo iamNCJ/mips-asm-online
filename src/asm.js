@@ -65,7 +65,7 @@ const op_set = {
     'sll': R_plus, 'srl': R_plus, 'sra': R_plus, 'jr': R_jr,
     // I-type
     'addi': I_basic, 'addiu': I_basic, 'andi': I_basic, 'ori': I_basic, 'xori': I_basic, 'slti': I_basic, 'sltiu': I_basic,
-    'beq': I_basic, 'bne': I_basic, 'lw': I_mem, 'sw': I_mem
+    'beq': I_basic, 'bne': I_basic, 'lw': I_mem, 'sw': I_mem, 'lui': I_lui
 };
 
 // 'j':J, 'jal':Jal, lui
@@ -241,6 +241,25 @@ function I_mem(ops: Array): number {
         throw Error('Illegal operand: Immediate length too long');
     }
     return parseInt(op + rs + rt + imm, 2);
+}
+
+function I_lui(ops: Array): number {
+    if (ops.length !== 4) { // lui rt imm ins-num
+        throw Error("I-type instruction `" + ops[0] + "` needs rt, immediate");
+    }
+    const rt = reg[ops[1]];
+    if (rt === undefined) {
+        throw Error("Register '" + ops[1] + "' not exist");
+    }
+    let imm = '', immediate = parseInt(ops[2]);
+    if (immediate >= 0 && immediate <= 65535) {
+        imm = ('0000000000000000' + immediate.toString(2)).slice(-16);
+    } else if (immediate <= 0 && immediate >= -32768) {
+        imm = ((-1 - immediate) ^ (2 ** 16 - 1)).toString(2);
+    } else {
+        throw Error('Illegal operand: Immediate length too long');
+    }
+    return parseInt('00111100000' + rt + imm, 2);
 }
 
 class ParseError extends Error {
