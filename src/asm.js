@@ -13,8 +13,8 @@ function assemble(mipsCode: string, isDebug: boolean = true): string {
         if (j >= 0) {
             lines[i] = lines[i].slice(0, j);
         }
+
         let temp = lines[i].replace(/,/g, ' ').replace(/;/g, ' ');
-        // console.log(temp)
         temp = temp.trim().split(/\s+/);
         // ignore comment line
         if (temp.length === 1 && temp[0] === "") continue;
@@ -162,7 +162,7 @@ function I_basic(ops: Array): number {
     if (immediate >= 0 && immediate <= 65535) {
         imm = ('0000000000000000' + immediate.toString(2)).slice(-16);
     } else if (immediate <= 0 && immediate >= -32768) {
-        imm = ((-1 - immediate) ^ (2**16-1)).toString(2);
+        imm = ((-1 - immediate) ^ (2 ** 16 - 1)).toString(2);
     } else {
         throw Error('Illegal operand: Immediate length too long');
     }
