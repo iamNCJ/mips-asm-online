@@ -72,9 +72,9 @@ function parse(ins: Array, isHex: boolean = true): string {
             }
         } catch (err) {
             if (err.name === 'TypeError') {
-                throw Error("Line " + (ins[i][ins[i].length - 1] + 1).toString() + ": no such instruction '" + ins[i][0] + "'");
+                throw new ParseError(ins[i][ins[i].length - 1] + 1, + "no such instruction '" + ins[i][0] + "'");
             } else {
-                throw Error("Line " + (ins[i][ins[i].length - 1] + 1).toString() + ": " + err.message);
+                throw new ParseError(ins[i][ins[i].length - 1] + 1, err.message);
             }
         }
     }
@@ -83,7 +83,7 @@ function parse(ins: Array, isHex: boolean = true): string {
 
 function R_basic(ops: Array): number {
     if (ops.length !== 5) { // ins rs, rt, rd, line-num
-        throw Error( "R-type instruction `" + ops[0] + "` needs rs, rt, rd");
+        throw Error("R-type instruction `" + ops[0] + "` needs rs, rt, rd");
     }
     let regs = [];
     for (let i = 1; i < 4; i++) {
@@ -93,8 +93,19 @@ function R_basic(ops: Array): number {
         }
     }
     const funcCodes = {
-        'add': '100000', 'addu': '100001', 'sub': '100010', 'subu': '100011', 'and': '100100', 'or': '100101', 'xor': '100110',
-        'nor': '100111', 'slt': '101010', 'sltu': '101011', 'sllv': '000100', 'srlv': '000110', 'srav': '000111'
+        'add': '100000',
+        'addu': '100001',
+        'sub': '100010',
+        'subu': '100011',
+        'and': '100100',
+        'or': '100101',
+        'xor': '100110',
+        'nor': '100111',
+        'slt': '101010',
+        'sltu': '101011',
+        'sllv': '000100',
+        'srlv': '000110',
+        'srav': '000111'
     };
     const op = '000000', sh_amt = '00000', func = funcCodes[ops[0]];
     return parseInt(op + regs[1] + regs[2] + regs[0] + sh_amt + func, 2);
@@ -102,7 +113,7 @@ function R_basic(ops: Array): number {
 
 function R_plus(ops: Array): number {
     if (ops.length !== 5) { // ins rs, rt, rd, line-num
-        throw Error( "R-type instruction `" + ops[0] + "` needs rs, rt, rd");
+        throw Error("R-type instruction `" + ops[0] + "` needs rs, rt, rd");
     }
     let regs = [];
     for (let i = 1; i < 3; i++) {
@@ -121,6 +132,22 @@ function R_plus(ops: Array): number {
     }
     const sh_amt = ('00000' + immediate.toString(2)).slice(-5);
     return parseInt('00000000000' + regs[1] + regs[0] + sh_amt + func, 2);
+}
+
+class ParseError extends Error {
+    constructor(lineNum: number, ...params) {
+        // Pass remaining arguments (including vendor specific ones) to parent constructor
+        super(...params);
+
+        // Maintains proper stack trace for where our error was thrown (only available on V8)
+        if (Error.captureStackTrace) {
+            Error.captureStackTrace(this, ParseError);
+        }
+
+        this.name = 'ParseError';
+        // Custom debugging information
+        this.line = lineNum;
+    }
 }
 
 module.exports = {
