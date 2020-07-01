@@ -67,7 +67,8 @@ const op_set = {
     'addi': I_basic, 'addiu': I_basic, 'andi': I_basic, 'ori': I_basic, 'xori': I_basic, 'slti': I_basic, 'sltiu': I_basic,
     'beq': I_basic, 'bne': I_basic, 'lw': I_mem, 'sw': I_mem, 'lui': I_lui,
     // J-type
-    'j': J_basic, 'jal': J_basic
+    'j': J_basic, 'jal': J_basic,
+    'eret': Eret
 };
 
 const reg = {
@@ -276,9 +277,9 @@ function J_basic(ops: Array, labelList: JSON):number {
         immediate = labelList[ops[1]];
         if (isNaN(immediate)) { // no such label
             throw Error("Undefined label: Label name: " + ops[1]);
-        } else if (immediate.toString(2).slice(0, 4) === ops[2].toString(2).slice(0, 4)) {
+        } else if (immediate.toString(2).slice(0, 4) !== ops[2].toString(2).slice(0, 4)) {
             // The upper 4 bits of the current PC register should be the same as the label's address's upper 4 bits
-            // throw Error("Label " + ops[1] + " out of range");
+            // throw Error("Label " + ops[1] + " out of range"); // FIXME Unable to judge simply according to line number
         }
     }
     let addr = '';
@@ -288,6 +289,10 @@ function J_basic(ops: Array, labelList: JSON):number {
         throw Error('Illegal address: address ' + ops[1] + ' out of range');
     }
     return parseInt(op + addr, 2);
+}
+
+function Eret():number {
+    return 0x02000018;
 }
 
 class ParseError extends Error {
