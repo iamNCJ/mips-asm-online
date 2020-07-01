@@ -278,7 +278,7 @@ function J_basic(ops: Array, labelList: JSON):number {
             throw Error("Undefined label: Label name: " + ops[1]);
         } else if (immediate.toString(2).slice(0, 4) === ops[2].toString(2).slice(0, 4)) {
             // The upper 4 bits of the current PC register should be the same as the label's address's upper 4 bits
-            throw Error("Label " + ops[1] + " out of range");
+            // throw Error("Label " + ops[1] + " out of range");
         }
     }
     let addr = '';
