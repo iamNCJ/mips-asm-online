@@ -1,7 +1,8 @@
 import React from 'react';
 import MonacoEditor from 'react-monaco-editor';
 import {Range} from 'monaco-editor';
-import {DefaultButton, Stack, IStackTokens, Text, Toggle} from "office-ui-fabric-react";
+import {DefaultButton, Stack, IStackTokens, Text, Toggle, PrimaryButton} from "office-ui-fabric-react";
+import { saveAs } from 'file-saver';
 
 import "./App.css"
 import assemble from "./asm"
@@ -68,6 +69,11 @@ class App extends React.Component {
         }
     };
 
+    saveToFile = () => {
+        var blob = new Blob([this.state.result], { type: "text/plain;charset=utf-8" });
+        saveAs(blob, "asm.coe");
+    }
+
     render() {
         const {code, theme} = this.state;
         const options = {
@@ -81,7 +87,8 @@ class App extends React.Component {
             <div>
                 <div id="control">
                     <Stack horizontal tokens={stackTokens}>
-                        <DefaultButton text="Assemble" onClick={this.assembleBtnFunc}/>
+                        <PrimaryButton text="Assemble" onClick={this.assembleBtnFunc}/>
+                        <DefaultButton text="Save to File" onClick={this.saveToFile}/>
                         <Toggle label="Debug Mode" inlineLabel onText="On" offText="Off" onChange={this.onChangeDebug}/>
                     </Stack>
                 </div>
